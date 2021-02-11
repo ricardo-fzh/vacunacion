@@ -21,11 +21,25 @@
 			
 			{% for c in centros %}
 			<div class="col-lg-4">
-				<div class="card mb-5 mb-lg-0">
+				<div class="card mb-lg-0">
 					<div class="card-body">
-						<h6 class="card-price text-center">
-							{{c.nombre | upper}}
-						</h6>
+							{% if c.nombre == 'icco' %}
+							<h6 class="card-price text-center mb-2">
+								{{c.nombre | upper}}
+							</h6>
+								<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3330.6941595031467!2d-70.70587888484584!3d-33.40514248078688!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c6a5bf73cb1f%3A0x243bbcb5df7f3015!2sAv.%20Dorsal%201365%2C%20Renca%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses!2scl!4v1613068282954!5m2!1ses!2scl" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+							
+							{% elif c.nombre == 'gorostiaga' %}
+								<h6 class="card-price text-center mb-2">
+									{{c.nombre | upper}}
+								</h6>
+								<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3331.126829641557!2d-70.69795018484615!3d-33.393855180790325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c6bdd592824d%3A0x3333ab5b50725792!2sPto%20Montt%203594%2C%20Renca%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses!2scl!4v1613068735655!5m2!1ses!2scl" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+							{% elif c.nombre == 'iccp' %}
+								<h6 class="card-price text-center mb-2">
+									{{c.nombre | upper}}
+								</h6>					
+								<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3330.950029056448!2d-70.75077958484606!3d-33.398467880788814!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c16ce91ad6ad%3A0x69d2c0aff09ef8aa!2sAv.%20Brasil%207823%2C%20Renca%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses!2scl!4v1613068787011!5m2!1ses!2scl" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>		
+							{% endif %}
 						<hr />
 						<a
 							href="{% url 'reserva' pk=c.id %}"

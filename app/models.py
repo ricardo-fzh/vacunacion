@@ -33,13 +33,6 @@ class Centro(models.Model):
     def __str__(self):
         return self.nombre
 
-class Location(models.Model):
-    latitude = models.FloatField(null=True, default=None, verbose_name="location latitude")
-    longitude = models.FloatField(null=True, default=None, verbose_name="location longitude")
-    street = models.CharField(max_length=100, verbose_name="street")
-    zip_code = models.CharField(max_length=100, verbose_name="zip code")
-    city = models.CharField(max_length=100, verbose_name="city")
-    country = models.CharField(max_length=100, verbose_name="country")
 
 class Persona(models.Model):
     nombre = models.CharField('nombres', max_length=100,  validators=[RegexValidator(r'\w', 'Formato incorreccto')])
@@ -58,7 +51,7 @@ class Persona(models.Model):
     fecha_seg_vacunacion = models.DateField('Fecha segunda vacunación', null=True, blank=True)
     fecha_primer_registro = models.DateField('Fecha primer registro', null=True, blank=True)
     fecha_segundo_registro = models.DateField('Fecha segundo registro', null=True, blank=True)
-    locations = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
+    direccion = models.CharField('Dirección', max_length=255)
     created_at = models.DateTimeField('Fecha creación', auto_now_add=True)
     updated_at = models.DateTimeField('Fecha de actualización', auto_now=True)
     

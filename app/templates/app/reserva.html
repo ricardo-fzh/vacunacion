@@ -70,7 +70,9 @@
 								<div class="form-group col-md-6	">
 									{{form.celular|as_crispy_field}}
 								</div>
-								
+								<div class="form-group col-md-12 mb-5">
+									{{form.direccion|as_crispy_field}}
+								</div>	
 								<button type="submit" class="btn btn-block btn-primary text-uppercase">Tomar hora </button>
 								
 								
@@ -98,5 +100,14 @@
 		});
 
 	</script>
+	<script>
+	    var onLoaded = function() {
+	       // I am assuming your field has id of where_load, it might be different
+	        var location_input = document.getElementById('id_direccion');
+	        var autocomplete = new google.maps.places.Autocomplete(location_input);
+
+	    }
+	</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnryVsacm2EyevPmZYuiI6yMwIv5anUOY&libraries=places&callback=onLoaded" async defer></script>
 
 {% endblock %}	
