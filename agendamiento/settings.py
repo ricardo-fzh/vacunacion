@@ -139,7 +139,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 
-EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'noreply@renca.cl'
 EMAIL_HOST_PASSWORD = 'R3nca.2020'
+EMAIL_USE_TLS = True

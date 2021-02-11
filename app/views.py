@@ -1,19 +1,22 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import logout
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from .models import *
-from datetime import date
-from tablib import Dataset
-from datetime import date
-import datetime 
-from django.core.exceptions import ObjectDoesNotExist
-from .forms import HorasForm, PersonaForm
-from django.http import HttpResponse
-from .resources import HoraResource, CentroResource
-import pandas as pd
+import datetime
 import os.path
+from datetime import date
+
+import pandas as pd
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from tablib import Dataset
+
+from .forms import HorasForm, PersonaForm
+from .models import *
+from .resources import CentroResource, HoraResource
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.template import Context
 
 # Create your views here.
 
@@ -37,6 +40,7 @@ def user_login(request):
             messages.error(request, 'Credenciales incorrectas')
     return render(request, 'app/login.html')
 
+
 def logout_user(request):
     logout(request)
     return redirect(to="login")
@@ -55,7 +59,6 @@ def index(request):
 # Hardcore function
 def reserva(request, pk):
     centro = get_object_or_404(Centro, pk=pk)
-    
     dias = centro.horas.distinct('dia')
     horas = centro.horas.all()
 
@@ -78,12 +81,22 @@ def reserva(request, pk):
 
         if form.is_valid():
             rut = form.cleaned_data.get('rut')
+            nombre = form.cleaned_data.get('nombre')
+            apellido_paterno = form.cleaned_data.get('apellido_paterno')
+            apellido_materno = form.cleaned_data.get('apellido_materno')
+            email = form.cleaned_data.get('email')
+            rut = form.cleaned_data.get('rut')
+            dv = form.cleaned_data.get('dv')
+            celular = form.cleaned_data.get('celular')
             existe_hora = Hora.objects.filter(pk=hora_pk).exists()
 
             if existe_hora == True:
                 existe_hora_agendada = Persona.objects.filter(rut=rut).exists()
                 hora = Hora.objects.get(pk=hora_pk)
-
+                d = {'nombre': nombre, 'apellido_paterno': apellido_paterno, 'apellido_materno': apellido_materno,
+                     'hora': hora, "email": email, 'rut': rut, 'dv': dv, 'celular': celular, 'centro':centro }
+                html_message = render_to_string('app/messages/email.html', d)
+                plain_message = strip_tags(html_message)
                 if existe_hora_agendada == False:
                     if hora.cupos > 0:
                         today = date.today()
@@ -96,15 +109,18 @@ def reserva(request, pk):
                         persona.fecha_vacunacion = hora.dia
                         persona.horas = hora
                         persona.save()
-                        messages.success(request, "Hora agendada correctamente")
+                        messages.success(
+                            request, "Hora agendada correctamente")
+                        send_mail('Vacuna Covid-19', plain_message, from_email='noreply@renca.cl',
+                                  recipient_list=[persona.email], html_message=html_message)
                         return redirect(to='/')
                     else:
                         messages.error(
                             request, "No quedan cupos para la hora seleccionada")
                         data['form'] = form
-                else:                
+                else:
                     persona = Persona.objects.get(rut=rut)
-                    
+
                     fecha_primer_registro = persona.fecha_primer_registro
                     if persona.vacuna_disponible <= 0:
                         messages.error(request, "Ya se encuentra vacunado")
@@ -112,9 +128,10 @@ def reserva(request, pk):
                         return render(request, 'app/reserva.html', data)
                     if hora.cupos > 0:
                         if persona.vacuna_disponible == 2:
-                     
+
                             if persona.fecha_vacunacion == None:
-                                form = PersonaForm(data=request.POST, instance=persona)
+                                form = PersonaForm(
+                                    data=request.POST, instance=persona)
                                 form.centros = centro
                                 form.save(data)
                                 hora.cupos = hora.cupos-1
@@ -123,21 +140,28 @@ def reserva(request, pk):
                                 persona.fecha_vacunacion = hora.dia
                                 persona.horas = hora
                                 persona.save()
-                                messages.success(request, "Hora agendada correctamente")
+                                send_mail('Vacuna Covid-19', plain_message, from_email='noreply@renca.cl',
+                                  recipient_list=[persona.email], html_message=html_message)
+                                messages.success(
+                                    request, "Hora agendada correctamente")
                                 return redirect(to='/')
                             else:
-                                messages.error(request, f"Ya tiene una hora agendada")
+                                messages.error(
+                                    request, f"Ya tiene una hora agendada")
                                 data['form'] = form
                         if persona.vacuna_disponible == 1:
                             today = datetime.datetime.today()
-                            start_date = persona.fecha_primer_registro.strftime("%Y-%m-%d")
-                            date_1 = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+                            start_date = persona.fecha_primer_registro.strftime(
+                                "%Y-%m-%d")
+                            date_1 = datetime.datetime.strptime(
+                                start_date, "%Y-%m-%d")
                             end_date = date_1 + datetime.timedelta(days=28)
                             x = datetime.datetime(2021, 3, 23)
-                            #today
+                            # today
                             if persona.fecha_seg_vacunacion == None and today >= end_date:
-                                primer_registro= persona.fecha_primer_registro
-                                form = PersonaForm(data=request.POST, instance=persona)
+                                primer_registro = persona.fecha_primer_registro
+                                form = PersonaForm(
+                                    data=request.POST, instance=persona)
                                 form.centros = centro
                                 form.save(data)
                                 hora.cupos = hora.cupos-1
@@ -148,10 +172,14 @@ def reserva(request, pk):
                                 persona.fecha_primer_registro = primer_registro
                                 persona.horas_seg_v = str(hora)
                                 persona.save()
-                                messages.success(request, "Hora agendada correctamente")
+                                send_mail('Vacuna Covid-19', plain_message, from_email='noreply@renca.cl',
+                                  recipient_list=[persona.email], html_message=html_message)
+                                messages.success(
+                                    request, "Hora agendada correctamente")
                                 return redirect(to='/')
-                            else: 
-                                messages.error(request, f"Debe esperar 28 días para la proxima vacuna {end_date}")
+                            else:
+                                messages.error(
+                                    request, f"Debe esperar 28 días para la proxima vacuna {end_date}")
                                 data['form'] = form
                     else:
                         messages.error(
@@ -167,12 +195,15 @@ def reserva(request, pk):
     return render(request, 'app/reserva.html', data)
 
 # mantenedor_fechas
+
+
 def mantenedor_fecha(request):
     if not request.user.is_authenticated:
         return redirect(to='login')
 
     try:
-        centros = Centro.objects.get(nombre__icontains=request.user.profile.centro.nombre)
+        centros = Centro.objects.get(
+            nombre__icontains=request.user.profile.centro.nombre)
         horas = centros.horas.all()
         data = {'centros': centros, 'horas': horas}
         return render(request, 'app/mantenedor_fechas.html', data)
@@ -181,11 +212,13 @@ def mantenedor_fecha(request):
         messages.error(request, 'Usuario no tiene un centro asociado')
         return redirect(to='login')
 
+
 def update_fecha(request, pk):
     if not request.user.is_authenticated:
         return redirect(to='login')
 
-    centro = Centro.objects.get(nombre__icontains=request.user.profile.centro.nombre)
+    centro = Centro.objects.get(
+        nombre__icontains=request.user.profile.centro.nombre)
     hora = get_object_or_404(Hora, pk=pk)
     form = HorasForm(instance=hora)
 
@@ -203,6 +236,7 @@ def update_fecha(request, pk):
         else:
             data['form'] = form
     return render(request, 'app/update-fecha.html', data)
+
 
 def add_fecha(request):
     if not request.user.is_authenticated:
@@ -244,6 +278,7 @@ def add_fecha(request):
 
     return render(request, 'app/add-fecha.html')
 
+
 def delete_fecha(request, pk):
     if not request.user.is_authenticated:
         return redirect(to='login')
@@ -251,14 +286,16 @@ def delete_fecha(request, pk):
     hora.delete()
     return redirect(to='mantenedor-fechas')
 
+
 def mantenedor_persona(request):
     if not request.user.is_authenticated:
         return redirect(to='login')
 
     try:
-        centros = Centro.objects.get(nombre__icontains=request.user.profile.centro.nombre)
+        centros = Centro.objects.get(
+            nombre__icontains=request.user.profile.centro.nombre)
         personas = Persona.objects.filter(centros__nombre=centros.nombre)
-     
+
         data = {'centros': centros, 'usuarios': personas}
 
         if request.method == 'POST':
@@ -266,12 +303,11 @@ def mantenedor_persona(request):
             if user_id != None:
                 persona = Persona.objects.get(id=user_id)
 
-
                 if persona.vacuna_disponible == 2:
 
                     x = datetime.date(2021, 3, 26)
-                    #date.today()
-                    if date.today() >= persona.fecha_vacunacion  :
+                    # date.today()
+                    if date.today() >= persona.fecha_vacunacion:
                         persona.vacuna_disponible = persona.vacuna_disponible - 1
                         persona.fecha_primer_registro = date.today()
                         persona.save()
@@ -280,22 +316,23 @@ def mantenedor_persona(request):
                     else:
                         messages.error(
                             request, f'Debe esperar 28 días para la proxima vacuna')
-                elif  persona.vacuna_disponible == 1:
-                    start_date = persona.fecha_primer_registro.strftime("%Y-%m-%d")
+                elif persona.vacuna_disponible == 1:
+                    start_date = persona.fecha_primer_registro.strftime(
+                        "%Y-%m-%d")
                     date_1 = datetime.datetime.strptime(start_date, "%Y-%m-%d")
                     end_date = date_1 + datetime.timedelta(days=28)
                     x = datetime.datetime(2021, 3, 23)
                     # datetime.datetime.today()
                     if datetime.datetime.today() >= end_date:
                         persona.vacuna_disponible = persona.vacuna_disponible - 1
-                        persona.fecha_vacunacion =   persona.fecha_vacunacion
-                        persona.fecha_primer_registro = persona.fecha_primer_registro 
+                        persona.fecha_vacunacion = persona.fecha_vacunacion
+                        persona.fecha_primer_registro = persona.fecha_primer_registro
                         persona.fecha_seg_vacunacion = persona.fecha_seg_vacunacion
                         persona.fecha_segundo_registro = date.today()
                         persona.save()
                         messages.success(
                             request, 'Persona registrada en el sistema')
-                    else: 
+                    else:
                         messages.error(
                             request, f'Debe esperar 28 días para la proxima vacuna {end_date}')
                 else:

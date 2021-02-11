@@ -10,7 +10,7 @@
 {% block content %}
 <section class="pricing py-5">
 	<div class="container">
-		
+
 		<div class="row">
 			<!-- Free Tier -->
 			<div class="col-12 mt-5">
@@ -30,7 +30,7 @@
 										<option selected="selected" disabled>Seleccione...</option>
 										{% for d in dias %}
 											{% if d.cupos > 0%}
-										  		<option value="{{d.id}}">{{d.dia}}</option> 
+										  		<option value="{{d.dia}}">{{d.dia}}</option> 
 											{% endif %}
 										{% endfor %}
 									</select>
@@ -41,7 +41,7 @@
 										<option selected="selected" disabled>Seleccione...</option>
 										{% for h in horas %}
 											{% if h.cupos > 0%}
-										  		<option value="{{h.id}}"  data-dias="{{ h.id }}">{{h.hora}}</option> 
+										  		<option value="{{h.id}}"  data-dias="{{ h.dia }}">{{h}}</option> 
 											{% endif %}
 										{% endfor %}
 									</select>
@@ -72,6 +72,8 @@
 								</div>
 								
 								<button type="submit" class="btn btn-block btn-primary text-uppercase">Tomar hora </button>
+								
+								
 							  </div>
                         </form>
 					</div>
@@ -90,10 +92,11 @@
 	<script>
 
 		$("#dias").change(function() {
-    	$("#horas").prop('disabled', !Boolean($("#dias").val()));
-    	$("#horas").find('option[data-dias]').hide();
-    	$("#horas").find('option[data-dias="' + $("#dias").val() + '"]').show();
+    		$("#horas").prop('disabled', !Boolean($("#dias").val()));
+    		$("#horas").find('option[data-dias]').hide();
+    		$("#horas").find('option[data-dias="' + $("#dias").val() + '"]').show();
 		});
+
 	</script>
 
 {% endblock %}	

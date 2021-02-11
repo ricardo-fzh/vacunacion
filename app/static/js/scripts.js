@@ -21,15 +21,4 @@
 	});
 })(jQuery);
 
-const noReload = () => {
-    const cuenta=0;
-        if (cuenta == 0) {
-            cuenta++;
-            return true;
-        } else {
-            return false;
-        }
-    
-};
-
 

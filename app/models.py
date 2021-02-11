@@ -22,6 +22,7 @@ class Hora(models.Model):
 class Centro(models.Model):
     nombre = models.CharField('Centro', max_length=180)
     horas = models.ManyToManyField(Hora, blank=True)
+    direccion = models.CharField('Dirección', max_length=255, null=True, blank=True)
     created_at = models.DateTimeField('Fecha creación', auto_now_add=True)
     updated_at = models.DateTimeField('Fecha de actualización', auto_now=True)
     
