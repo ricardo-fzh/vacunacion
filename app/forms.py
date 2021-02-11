@@ -22,6 +22,7 @@ class PersonaForm(forms.ModelForm):
         widgets = {
         'fecha_nac': forms.TextInput(attrs={'type': 'date'}),
         'celular': forms.TextInput(attrs={'placeholder': '+569xxxxxxxx'}),
+        'direccion' :forms.TextInput(attrs={'placeholder': 'Ej: Los Aromos 3339, Renca'})
         }
     
     #Validaciones se debe validar el rut si existe y es correcto   
