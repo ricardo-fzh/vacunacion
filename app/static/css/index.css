@@ -7,6 +7,7 @@ body {
 	margin-top: 80px;
 } */
 
+
 .pricing .card {
 	border: none;
 	border-radius: 1rem;
@@ -54,16 +55,21 @@ body {
 
 /* Hover Effects on Card */
 
-/* @media (min-width: 992px) { */
-	/* .pricing .card:hover {
+ @media (min-width: 992px) { */
+	 .pricing .card:hover {
 		margin-top: -0.25rem;
 		margin-bottom: 0.25rem;
 		box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.3);
 	}
 	.pricing .card:hover .btn {
 		opacity: 1;
-	} */
-/* } */
+	} 
+} 
 .centros-title{
 	margin-bottom: 50px !important; 
+}
+
+h6{
+	font-size: 30px !important;
+	margin-bottom: 20px !important;
 }
