@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %} {% block css %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/index.css'%}" />
+
+{% endblock %} {% block content %}
+<script>
+	if ( window.history.replaceState ) {
+		 window.history.replaceState( null, null, window.location.href );
+	 }
+	 
+	 </script>
+ 
+<section class="pricing py-5">
+	<div class="container">
+		<div class="text-center centros-title">
+			<h1 style="color:#fff; font-size:60px;">Centros de vacunación</h1>
+			    <h4 style="color:#fff;">Reserva tu hora</h4>
+		</div>
+	
+		<div class="row">
+			<!-- Free Tier -->
+			
+			{% for c in centros %}
+			<div class="col-lg-4">
+				<div class="card mb-5 mb-lg-0">
+					<div class="card-body">
+						<h6 class="card-price text-center">
+							{{c.nombre | upper}}
+						</h6>
+						<hr />
+						<a
+							href="{% url 'reserva' pk=c.id %}"
+							class="btn btn-block btn-primary text-uppercase"
+							>Tomar hora</a
+						>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</section>
+{% endblock %}

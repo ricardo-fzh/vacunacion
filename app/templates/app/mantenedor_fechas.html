@@ -1,0 +1,69 @@
+{% extends 'app/base.html' %} 
+
+{% block title %} Mantenedor {% endblock %} 
+{% block css %} 
+	{% load static%}
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.23/datatables.min.css"/>
+{% endblock %}
+
+{% block content %}
+
+<main>
+	<div class="container-fluid">
+		<h2 class="mt-4">Administración {{centros.nombre | upper}}</h2>
+		<ol class="breadcrumb mb-4">
+			<li class="breadcrumb-item active">Agenda</li>
+		</ol>
+
+		<div class="card mb-4">
+			<div class="card-header">
+				<i class="fas fa-table mr-1"></i>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table
+						class="table table-bordered"
+						id="table"
+						width="100%"
+						cellspacing="0"
+					>
+						<thead>
+							<tr>
+					            <th>#</th>
+        		                <th>Día</th>
+        		                <th>Hora</th>
+        		                <th>Cupos</th>
+								<th></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for h in horas %}
+							<tr>
+								<td> {{ forloop.counter }} </td>
+								<td> {{h.dia}} </td>
+								<td> {{h.hora}}	</td>
+								<td> {{h.cupos}} </td>
+								<td> <a href="{% url 'update-fecha' pk=h.pk %}" class="btn btn-primary btn-block" > Editar </button>
+								<td> <a href="{% url 'delete-fecha' pk=h.pk %}" class="btn btn-danger btn-block" > Eliminar </button>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<div class="text-center">
+						<a href="{% url 'add-fecha' %}"  class="btn btn-success">Agregar fechas</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+{% endblock %}
+
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.23/datatables.min.js"></script>
+{% load static %}
+<script src="{% static 'js/table.js' %}"></script>
+{% endblock %}
