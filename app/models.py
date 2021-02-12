@@ -33,7 +33,6 @@ class Centro(models.Model):
     def __str__(self):
         return self.nombre
 
-
 class Persona(models.Model):
     nombre = models.CharField('nombres', max_length=100,  validators=[RegexValidator(r'\w', 'Formato incorreccto')])
     apellido_paterno = models.CharField('apellido paterno', max_length=100, validators=[RegexValidator(r'[a-z]', 'Formato incorreccto')] )
@@ -42,7 +41,7 @@ class Persona(models.Model):
     dv = models.CharField('Dv', max_length=1, validators=[RegexValidator(r'[0-9kK]{1}', 'Formato incorrecto debe ser digito o K')])
     fecha_nac = models.DateField('fecha nacimiento')
     email = models.EmailField('email', max_length=250)
-    celular = models.CharField('Celular',max_length=15, validators=[RegexValidator(r'^([+]56)?(\s?)(0?9)(\s?)[987654]\d{7}$', 'Formato debe ser: +569xxxxxxxx')])
+    celular = models.CharField('Celular',max_length=12)
     vacuna_disponible = models.IntegerField('Vacunas disponibles', default=2, validators=[MinValueValidator(0)])
     centros = models.ForeignKey(Centro, on_delete=models.CASCADE, null=True, blank=True) 
     horas = models.ForeignKey(Hora, verbose_name="Hora primera vacuna", on_delete=models.CASCADE, null=True, blank=True)
@@ -52,6 +51,8 @@ class Persona(models.Model):
     fecha_primer_registro = models.DateField('Fecha primer registro', null=True, blank=True)
     fecha_segundo_registro = models.DateField('Fecha segundo registro', null=True, blank=True)
     direccion = models.CharField('Dirección', max_length=255)
+    block = models.CharField('Block', max_length=255, null=True, blank=True)
+    departamento = models.CharField('Departamento', max_length=255, null=True, blank=True)
     created_at = models.DateTimeField('Fecha creación', auto_now_add=True)
     updated_at = models.DateTimeField('Fecha de actualización', auto_now=True)
     

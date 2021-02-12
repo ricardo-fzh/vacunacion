@@ -63,6 +63,7 @@ def reserva(request, pk):
     horas = centro.horas.all()
 
     form = PersonaForm()
+    form.fields['celular'].widget.attrs['maxlength'] = '8'
     data = {
         "form": form,
         'horas': horas,

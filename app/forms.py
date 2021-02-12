@@ -1,6 +1,7 @@
 from django import forms
 from .models import Hora, Persona, Centro
 from .helper import digito_verificador
+from django.core.exceptions import ValidationError
 
 class HorasForm(forms.ModelForm):
     class Meta:
@@ -21,8 +22,10 @@ class PersonaForm(forms.ModelForm):
         exclude = ['vacuna_disponible', 'centros','horas', 'horas_seg_v', 'fecha_seg_vacunacion']
         widgets = {
         'fecha_nac': forms.TextInput(attrs={'type': 'date'}),
-        'celular': forms.TextInput(attrs={'placeholder': '+569xxxxxxxx'}),
-        'direccion' :forms.TextInput(attrs={'placeholder': 'Ej: Los Aromos 3339, Renca'})
+        'celular': forms.TextInput(attrs={'placeholder': '87654321', 'type': 'tel', 'size':8}),
+        'direccion' :forms.TextInput(attrs={'placeholder': 'Ej: Los Aromos 3339, Renca'}),
+        'departamento' :forms.TextInput(attrs={'placeholder': 'Ej: 1420'}),
+        'block' :forms.TextInput(attrs={'placeholder': 'Ej: Torre A'})
         }
     
     #Validaciones se debe validar el rut si existe y es correcto   
@@ -48,3 +51,9 @@ class PersonaForm(forms.ModelForm):
     def clean_apellido_paterno(self):
         apellido_paterno = " ".join(self.cleaned_data.get('apellido_paterno').split())
         return apellido_paterno.title()
+
+    def clean_celular(self):
+        celular = f"+569{self.cleaned_data.get('celular')}"
+        if len(celular) != 12 :
+            raise forms.ValidationError('Formato debe ser:87654321')
+        return celular
