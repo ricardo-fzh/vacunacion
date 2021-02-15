@@ -17,7 +17,7 @@ from .resources import CentroResource, HoraResource
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.template import Context
-
+import locale
 # Create your views here.
 
 # Validación Rut
@@ -40,36 +40,51 @@ def user_login(request):
             messages.error(request, 'Credenciales incorrectas')
     return render(request, 'app/login.html')
 
-
 def logout_user(request):
     logout(request)
     return redirect(to="login")
 
 # Vista usuario
-
-
 def index(request):
     centros = Centro.objects.all()
+    contador = 0
+
+    for c in centros:
+        if c.estado == True:
+            contador+=1
+
     data = {
+        'contador': contador,
         'centros': centros,
     }
     return render(request, 'app/index.html', data)
-
 
 # Hardcore function
 def reserva(request, pk):
     centro = get_object_or_404(Centro, pk=pk)
     dias = centro.horas.distinct('dia')
     horas = centro.horas.all()
-
     form = PersonaForm()
     form.fields['celular'].widget.attrs['maxlength'] = '8'
+    distinct_today = []
+    
+    hoy = datetime.datetime.today().strftime('%Y-%m-%d')
+    hoy = datetime.datetime.strptime(hoy, '%Y-%m-%d').date()
+
+
+    for d in dias:
+        if d.dia > hoy:
+            distinct_today.append(d)  
+
     data = {
         "form": form,
         'horas': horas,
-        'dias': dias,
+        'dias': distinct_today,
         'centro': centro,
     }
+
+    if centro.estado == False:
+        return redirect(to="/")
 
     if request.method == 'POST':
         form = PersonaForm(data=request.POST)
@@ -196,8 +211,6 @@ def reserva(request, pk):
     return render(request, 'app/reserva.html', data)
 
 # mantenedor_fechas
-
-
 def mantenedor_fecha(request):
     if not request.user.is_authenticated:
         return redirect(to='login')
@@ -212,7 +225,6 @@ def mantenedor_fecha(request):
         logout(request)
         messages.error(request, 'Usuario no tiene un centro asociado')
         return redirect(to='login')
-
 
 def update_fecha(request, pk):
     if not request.user.is_authenticated:
@@ -237,7 +249,6 @@ def update_fecha(request, pk):
         else:
             data['form'] = form
     return render(request, 'app/update-fecha.html', data)
-
 
 def add_fecha(request):
     if not request.user.is_authenticated:
@@ -279,14 +290,12 @@ def add_fecha(request):
 
     return render(request, 'app/add-fecha.html')
 
-
 def delete_fecha(request, pk):
     if not request.user.is_authenticated:
         return redirect(to='login')
     hora = get_object_or_404(Hora, pk=pk)
     hora.delete()
     return redirect(to='mantenedor-fechas')
-
 
 def mantenedor_persona(request):
     if not request.user.is_authenticated:

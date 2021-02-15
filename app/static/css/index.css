@@ -27,8 +27,8 @@ body {
 }
 
 .pricing .card-price {
-	font-size: 3rem;
-	margin: 0;
+	font-size: 20px !important;
+	margin-bottom: 16px !important;
 }
 
 .pricing .card-price .period {
@@ -70,7 +70,7 @@ body {
 }
 
 h6{
-	font-size: 30px !important;
+	font-size: 10px !important;
 	margin-bottom: 20px !important;
 }
 

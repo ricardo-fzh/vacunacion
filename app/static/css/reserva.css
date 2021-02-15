@@ -8,3 +8,8 @@ body{
 .hora{
     font-weight: bold !important;
 }
+
+
+.card-info{
+    width: 600px !important;
+}

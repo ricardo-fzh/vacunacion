@@ -6,50 +6,100 @@
 	if ( window.history.replaceState ) {
 		 window.history.replaceState( null, null, window.location.href );
 	 }
-	 
-	 </script>
- 
+</script>
+
+{% load static%}
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center mr-auto mb-5 ">
+			<img src="{% static 'img/logoBrazo.png' %}" style="width:230px; margin-top: 50px;"/>
+		</div>
+		<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center ml-auto mb-5">
+			<img src="{% static 'img/logo.png' %}" style="width:230px; margin-top: 77px;"/>
+		</div>
+	</div>
+</div>
+
 <section class="pricing py-5">
 	<div class="container">
 		<div class="text-center centros-title">
-			<h1 style="color:#fff; font-size:60px;">Centros de vacunación</h1>
-			    <h4 style="color:#fff;">Reserva tu hora</h4>
+			<h1 style="color:#fff; font-size:60px;">¡AGENDA TU HORA!</h1>
+			<h4 style="color:#fff;">Vacunación contra COVID-19 en Renca</h4>
 		</div>
 	
 		<div class="row">
-			<!-- Free Tier -->
-			
 			{% for c in centros %}
-			<div class="col-lg-4">
-				<div class="card mb-lg-0 mb-5">
-					<div class="card-body">
-							{% if c.nombre == 'icco' %}
-							<h6 class="card-price text-center mb-2">
-								{{c.nombre | upper}}
-							</h6>
-								<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3330.6941595031467!2d-70.70587888484584!3d-33.40514248078688!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c6a5bf73cb1f%3A0x243bbcb5df7f3015!2sAv.%20Dorsal%201365%2C%20Renca%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses!2scl!4v1613068282954!5m2!1ses!2scl" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-							
-							{% elif c.nombre == 'gorostiaga' %}
-								<h6 class="card-price text-center mb-2">
+				{% if  contador  == 1 and c.estado == True %}
+					<div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+						<div class="card mb-lg-0 mb-5">
+							<div class="card-body">
+								<h6 class="card-price mb-2">
 									{{c.nombre | upper}}
 								</h6>
-								<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3331.126829641557!2d-70.69795018484615!3d-33.393855180790325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c6bdd592824d%3A0x3333ab5b50725792!2sPto%20Montt%203594%2C%20Renca%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses!2scl!4v1613068735655!5m2!1ses!2scl" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-							{% elif c.nombre == 'iccp' %}
-								<h6 class="card-price text-center mb-2">
+									<iframe src="{{c.mapa}}" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+								<hr />
+								<a
+									href="{% url 'reserva' pk=c.id %}"
+									class="btn btn-block btn-primary text-uppercase"
+									>Agenda tu hora</a
+								>
+							</div>
+						</div>
+					</div>
+				{% elif contador  == 2 and c.estado == True %}
+					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+						<div class="card mb-lg-0 mb-5">
+							<div class="card-body">
+								<h6 class="card-price mb-2">
 									{{c.nombre | upper}}
-								</h6>					
-								<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3330.950029056448!2d-70.75077958484606!3d-33.398467880788814!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c16ce91ad6ad%3A0x69d2c0aff09ef8aa!2sAv.%20Brasil%207823%2C%20Renca%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses!2scl!4v1613068787011!5m2!1ses!2scl" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>		
-							{% endif %}
-						<hr />
-						<a
-							href="{% url 'reserva' pk=c.id %}"
-							class="btn btn-block btn-primary text-uppercase"
-							>Tomar hora</a
-						>
+								</h6>
+									<iframe src="{{c.mapa}}" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+								<hr />
+								<a
+									href="{% url 'reserva' pk=c.id %}"
+									class="btn btn-block btn-primary text-uppercase"
+									>Agenda tu hora</a
+								>
+							</div>
+						</div>
+					</div>
+				{% elif contador  == 3 and c.estado == True %}
+					<div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+						<div class="card mb-lg-0 mb-5">
+							<div class="card-body">
+								<h6 class="card-price mb-2">
+									{{c.nombre | upper}}
+								</h6>
+									<iframe src="{{c.mapa}}" width="400" height="300" frameborder="0" style="width:100%" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+								<hr />
+								<a
+									href="{% url 'reserva' pk=c.id %}"
+									class="btn btn-block btn-primary text-uppercase"
+									>Agenda tu hora</a
+								>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="card mb-lg-12 card-info">
+					<div class="container">
+						<p class="mt-3">1. Selecciona el lugar donde quieres vacunarte.</p>
+						<p class="mt-3">2. Completa tus datos</p>
+						<p class="mt-3">3. ¡Agenda tu hora!</p>
+						<h5><strong>¡Atención!</strong></h5>
+						<p class="mt-3">- Solo podrás agendar tu día, hora y lugar en la fecha en que corresponde la vacunación a tu edad.</p>
+						<p class="mt-3">- Solo se permitirà un agendamiento de hora por RUT.</p>
 					</div>
 				</div>
 			</div>
-			{% endfor %}
 		</div>
 	</div>
 </section>
