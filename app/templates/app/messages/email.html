@@ -182,10 +182,11 @@
 										margin: 2;
 									"
 								>
-									Agendamiento de Vacunación
+									¡Tu hora ha sido agendada exitosamente!
 								</h1>
 								<img
-									src=" https://img.icons8.com/clouds/100/000000/handshake.png"
+								{% load static %}
+									src="{% static 'img/lgb.png' %}"
 									width="125"
 									height="120"
 									style="display: block; border: 0px"
@@ -223,12 +224,14 @@
 								"
 							>
 								<p style="margin: 0">
-									El agendamiento de {{nombre}}
+									La hora de  {{nombre}}
 									{{apellido_paterno}} {{apellido_materno}}
-                                    con	su Rut: {{rut}}-{{dv}} fue agendada
+                                     RUT: {{rut}}-{{dv}} fue agendada
 									exitosamente para el día {{hora.dia}} a las
-									{{hora.hora}}hrs. en el centro {{centro}}
+									{{hora.hora}}hrs. en el instituto {{centro}}
 								</p>
+								</br>
+								<p><strong>Debes llegar 10 minutos antes de tu hora agendada</strong></p>
 							</td>
 						</tr>
 					</table>
