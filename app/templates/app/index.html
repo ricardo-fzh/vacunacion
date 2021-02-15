@@ -10,16 +10,17 @@
 
 {% load static%}
 
-<div class="container">
-	<div class="row">
-		<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center mr-auto mb-5 ">
-			<img src="{% static 'img/logoBrazo.png' %}" style="width:230px; margin-top: 50px;"/>
+	<div class="d-flex">
+			<div class="mr-auto ml-5 ">
+			<img class="img-fluid" src="{% static 'img/logoBrazo.png' %}" style="width:120px; margin-top: 50px;"/>
 		</div>
-		<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center ml-auto mb-5">
-			<img src="{% static 'img/logo.png' %}" style="width:230px; margin-top: 77px;"/>
+			<div class="ml-auto mr-5">
+			<img class="img-fluid" src="{% static 'img/logo.png' %}" style="width:120px; margin-top: 85px;"/>
 		</div>
+
+
 	</div>
-</div>
+
 
 <section class="pricing py-5">
 	<div class="container">
