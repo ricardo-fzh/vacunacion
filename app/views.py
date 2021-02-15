@@ -20,9 +20,6 @@ from django.template import Context
 import locale
 # Create your views here.
 
-# Validación Rut
-
-
 # Sistema
 def user_login(request):
     if request.user.is_authenticated:
