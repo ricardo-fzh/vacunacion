@@ -29,7 +29,6 @@ def user_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
-
         if user is not None:
             login(request, user)
             return redirect(to='mantenedor-fechas')
@@ -68,12 +67,10 @@ def reserva(request, pk):
     hoy = datetime.datetime.today().strftime('%Y-%m-%d')
     hoy = datetime.datetime.strptime(hoy, '%Y-%m-%d').date()
 
-    
     for d in dias:
         if d.dia > hoy:
             distinct_today.append(d)  
 
-    print(horas)
     data = {
         "form": form,
         'horas': horas,
@@ -214,11 +211,19 @@ def mantenedor_fecha(request):
         return redirect(to='login')
 
     try:
-        centros = Centro.objects.get(
-            nombre__icontains=request.user.profile.centro.nombre)
-        horas = centros.horas.all()
-        data = {'centros': centros, 'horas': horas}
-        return render(request, 'app/mantenedor_fechas.html', data)
+        if request.user.is_staff:
+            centros = Centro.objects.all()
+            data = { 
+                'centros': centros,
+            } 
+            return render(request, 'app/mantenedor_fechas.html', data)
+        else: 
+            centro = Centro.objects.get(
+                nombre__icontains=request.user.profile.centro.nombre)
+            centros = Centro.objects.all()
+            horas = centro.horas.all()
+            data = {'centros': centro, 'centros_all':centros, 'horas': horas}
+            return render(request, 'app/mantenedor_fechas.html', data)
     except ObjectDoesNotExist:
         logout(request)
         messages.error(request, 'Usuario no tiene un centro asociado')
@@ -300,56 +305,59 @@ def mantenedor_persona(request):
         return redirect(to='login')
 
     try:
-        centros = Centro.objects.get(
-            nombre__icontains=request.user.profile.centro.nombre)
-        personas = Persona.objects.filter(centros__nombre=centros.nombre)
+        if request.user.is_staff:
+            print('es staff')
+            return render(request, 'app/mantenedor_fechas.html')
+        else:
+            centros = Centro.objects.get(
+                nombre__icontains=request.user.profile.centro.nombre)
+            personas = Persona.objects.filter(centros__nombre=centros.nombre)
 
-        data = {'centros': centros, 'usuarios': personas}
+            data = {'centros': centros, 'usuarios': personas}
 
-        if request.method == 'POST':
-            user_id = request.POST.get('id')
-            if user_id != None:
-                persona = Persona.objects.get(id=user_id)
+            if request.method == 'POST':
+                user_id = request.POST.get('id')
+                if user_id != None:
+                    persona = Persona.objects.get(id=user_id)
 
-                if persona.vacuna_disponible == 2:
+                    if persona.vacuna_disponible == 2:
 
-                    x = datetime.date(2021, 3, 26)
-                    # date.today()
-                    if date.today() >= persona.fecha_vacunacion:
-                        persona.vacuna_disponible = persona.vacuna_disponible - 1
-                        persona.fecha_primer_registro = date.today()
-                        persona.save()
-                        messages.success(
-                            request, 'Persona registrada en el sistema')
+                        x = datetime.date(2021, 3, 26)
+                        # date.today()
+                        if date.today() >= persona.fecha_vacunacion:
+                            persona.vacuna_disponible = persona.vacuna_disponible - 1
+                            persona.fecha_primer_registro = date.today()
+                            persona.save()
+                            messages.success(
+                                request, 'Persona registrada en el sistema')
+                        else:
+                            messages.error(
+                                request, f'Debe esperar 28 días para la proxima vacuna')
+                    elif persona.vacuna_disponible == 1:
+                        start_date = persona.fecha_primer_registro.strftime(
+                            "%Y-%m-%d")
+                        date_1 = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+                        end_date = date_1 + datetime.timedelta(days=28)
+                        x = datetime.datetime(2021, 3, 23)
+                        # datetime.datetime.today()
+                        if datetime.datetime.today() >= end_date:
+                            persona.vacuna_disponible = persona.vacuna_disponible - 1
+                            persona.fecha_vacunacion = persona.fecha_vacunacion
+                            persona.fecha_primer_registro = persona.fecha_primer_registro
+                            persona.fecha_seg_vacunacion = persona.fecha_seg_vacunacion
+                            persona.fecha_segundo_registro = date.today()
+                            persona.save()
+                            messages.success(
+                                request, 'Persona registrada en el sistema')
+                        else:
+                            messages.error(
+                                request, f'Debe esperar 28 días para la proxima vacuna {end_date}')
                     else:
-                        messages.error(
-                            request, f'Debe esperar 28 días para la proxima vacuna')
-                elif persona.vacuna_disponible == 1:
-                    start_date = persona.fecha_primer_registro.strftime(
-                        "%Y-%m-%d")
-                    date_1 = datetime.datetime.strptime(start_date, "%Y-%m-%d")
-                    end_date = date_1 + datetime.timedelta(days=28)
-                    x = datetime.datetime(2021, 3, 23)
-                    # datetime.datetime.today()
-                    if datetime.datetime.today() >= end_date:
-                        persona.vacuna_disponible = persona.vacuna_disponible - 1
-                        persona.fecha_vacunacion = persona.fecha_vacunacion
-                        persona.fecha_primer_registro = persona.fecha_primer_registro
-                        persona.fecha_seg_vacunacion = persona.fecha_seg_vacunacion
-                        persona.fecha_segundo_registro = date.today()
-                        persona.save()
-                        messages.success(
-                            request, 'Persona registrada en el sistema')
-                    else:
-                        messages.error(
-                            request, f'Debe esperar 28 días para la proxima vacuna {end_date}')
+                        messages.error(request, 'Persona ya se encuentra vacunada')
                 else:
-                    messages.error(request, 'Persona ya se encuentra vacunada')
-            else:
-                messages.error(
-                    request, 'Persona no se encuentra registrada sistema')
-        return render(request, 'app/mantenedor_persona.html', data)
-
+                    messages.error(
+                        request, 'Persona no se encuentra registrada sistema')
+            return render(request, 'app/mantenedor_persona.html', data)
     except ObjectDoesNotExist:
         logout(request)
         messages.error(request, 'Usuario no tiene un centro asociado')
