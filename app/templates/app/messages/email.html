@@ -116,7 +116,7 @@
 
 	<body
 		style="
-			background-color: #055063;
+			background-color: #31abfe;
 			margin: 0 !important;
 			padding: 0 !important;
 		"
@@ -126,7 +126,7 @@
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<!-- LOGO -->
 			<tr>
-				<td bgcolor="#fc5c64" align="center">
+				<td bgcolor="#31abfe" align="center">
 					<table
 						border="0"
 						cellpadding="0"
@@ -146,7 +146,7 @@
 			</tr>
 			<tr>
 				<td
-					bgcolor="#FFA73B"
+					bgcolor="#31abfe"
 					align="center"
 					style="padding: 0px 10px 0px 10px"
 				>
@@ -175,7 +175,7 @@
 								"
 							>
 								<h1
-									bgcolor="#FFA73B"
+									bgcolor="#31abfe"
 									style="
 										font-size: 48px;
 										font-weight: 400;
@@ -185,9 +185,8 @@
 									¡Tu hora ha sido agendada exitosamente!
 								</h1>
 								<img
-								{% load static %}
-									src="{% static 'img/lgb.png' %}"
-									width="125"
+									src="https://storage.googleapis.com/multiproposito/Mesa%20de%20trabajo%201.png"
+									width="170"
 									height="120"
 									style="display: block; border: 0px"
 								/>
@@ -198,9 +197,9 @@
 			</tr>
 			<tr>
 				<td
-					bgcolor="#f4f4f4"
+					bgcolor="#31abfe"
 					align="center"
-					style="padding: 0px 10px 0px 10px"
+					style="padding: 0px 10px 0px 10px; width:200px;"
 				>
 					<table
 						border="0"
@@ -223,7 +222,7 @@
 									line-height: 25px;
 								"
 							>
-								<p style="margin: 0">
+								<p style="margin: 0;   text-align: justify; text-justify: inter-word;">
 									La hora de  {{nombre}}
 									{{apellido_paterno}} {{apellido_materno}}
                                      RUT: {{rut}}-{{dv}} fue agendada
@@ -231,7 +230,9 @@
 									{{hora.hora}}hrs. en el instituto {{centro}}
 								</p>
 								</br>
-								<p><strong>Debes llegar 10 minutos antes de tu hora agendada</strong></p>
+								<div style="  text-align: center;">
+									<p><small><strong>Debes llegar 10 minutos antes de tu hora agendada</strong></small></p>
+								</div>
 							</td>
 						</tr>
 					</table>

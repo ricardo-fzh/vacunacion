@@ -60,7 +60,7 @@ def index(request):
 def reserva(request, pk):
     centro = get_object_or_404(Centro, pk=pk)
     dias = centro.horas.distinct('dia')
-    horas = centro.horas.all()
+    horas = centro.horas.all().order_by('hora')
     form = PersonaForm()
     form.fields['celular'].widget.attrs['maxlength'] = '8'
     distinct_today = []
@@ -68,11 +68,12 @@ def reserva(request, pk):
     hoy = datetime.datetime.today().strftime('%Y-%m-%d')
     hoy = datetime.datetime.strptime(hoy, '%Y-%m-%d').date()
 
-
+    
     for d in dias:
         if d.dia > hoy:
             distinct_today.append(d)  
 
+    print(horas)
     data = {
         "form": form,
         'horas': horas,
