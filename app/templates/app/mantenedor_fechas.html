@@ -17,13 +17,14 @@
 
 		<div class="card mb-4">
 			<div class="card-header mb-5">
+				{% if request.user.is_staff %}
 				<div class="container">
 					<form method='POST' class="form-row">
 					{% csrf_token %}
 						<div class="form-group col-12">
 							<i class="fas fa-table mr-1"></i>
 							<label class="" for="inlineFormCustomSelectPref">Seleccione instituto </label>
-							<select class="custom-select" name="horas" id="horas" >
+							<select class="custom-select" name="centros" id="centros" >
 								<option selected="selected" disabled>Seleccione...</option>
 								{% for c in centros %}
 								  	<option value="{{c.id}}">{{c}}</option> 
@@ -35,7 +36,7 @@
 						</div>
 					</form>
 				</div>
-
+				{% endif %}
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
@@ -56,21 +57,35 @@
 							</tr>
 						</thead>
 						<tbody>
+							<div class="text-center">
+						
+								{% if  request.user.is_staff %}
+									{% if centro_id != None%}
+										<a href="{% url 'add-fecha-admin' pk=centro_id  %}"  class="btn btn-success">Agregar fechas</a>
+									{% endif %}
+								{% else %}
+									<a href="{% url 'add-fecha' %}"  class="btn btn-success">Agregar fechas</a>
+								{% endif %}
+		
+							</div>
 							{% for h in horas %}
 							<tr>
 								<td> {{ forloop.counter }} </td>
 								<td> {{h.dia}} </td>
 								<td> {{h.hora}}	</td>
 								<td> {{h.cupos}} </td>
-								<td> <a href="{% url 'update-fecha' pk=h.pk %}" class="btn btn-primary btn-block" > Editar </button>
+								{% if  request.user.is_staff %}
+								<td> <a href="{% url 'update-fecha-admin' pk=h.pk pk_centro=centro_id  %}" class="btn btn-primary btn-block" > Editar </button>
+								{% else %}
+									<td> <a href="{% url 'update-fecha' pk=h.pk  %}" class="btn btn-primary btn-block" > Editar </button>
+								{% endif %}
 								<td> <a href="{% url 'delete-fecha' pk=h.pk %}" class="btn btn-danger btn-block" > Eliminar </button>
 							</tr>
 							{% endfor %}
+
 						</tbody>
 					</table>
-					<div class="text-center">
-						<a href="{% url 'add-fecha' %}"  class="btn btn-success">Agregar fechas</a>
-					</div>
+
 				</div>
 			</div>
 		</div>

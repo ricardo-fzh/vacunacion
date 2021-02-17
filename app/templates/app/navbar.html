@@ -67,16 +67,25 @@
 						data-parent="#sidenavAccordion"
 					>
 						<nav class="sb-sidenav-menu-nested nav">
+
 							<a
 								class="nav-link"
 								href="{% url 'mantenedor-fechas' %}"
 								>Fechas</a
 							>
+							{% if  request.user.is_staff %}
+							<a
+								class="nav-link"
+								href="{% url 'mantenedor-personas-admin' %}"
+								>Personas</a
+							>
+							{% else %}
 							<a
 								class="nav-link"
 								href="{% url 'mantenedor-personas' %}"
 								>Personas</a
 							>
+							{% endif%}
 						</nav>
 					</div>
 				</div>

@@ -25,11 +25,12 @@
 <body class="sb-nav-fixed">  
 
     {% url 'mantenedor-fechas' as mantenedor %}
+    {% url 'mantenedor-personas-admin' as mantenedor_persona_admin %}
     <!-- {% url 'mantenedor-personas' as  personas %} -->
     {% url 'add-fecha' as add %}
     {% url 'update-fecha' as update %}
     
-    {% if request.get_full_path == mantenedor or request.get_full_path == add or request.get_full_path == update  or request.get_full_path == personas %}
+    {% if request.get_full_path == mantenedor or request.get_full_path == add or request.get_full_path == update  or request.get_full_path == personas or request.get_full_path == mantenedor_persona_admin %}
 
 
         {% include 'app/navbar.html' %}
@@ -110,7 +111,7 @@
     {% block content %}
 
     {% endblock %}
-    {% if request.get_full_path == mantenedor or request.get_full_path == add or request.get_full_path == update  or request.get_full_path == personas %}
+    {% if request.get_full_path == mantenedor or request.get_full_path == add or request.get_full_path == update  or request.get_full_path == personas or request.get_full_path == mantenedor_persona_admin %}
         {% include 'app/navbar.html' %}
 
         </div>
