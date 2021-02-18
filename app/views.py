@@ -18,6 +18,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.template import Context
 import locale
+
 # Create your views here.
 
 # Sistema
@@ -63,13 +64,13 @@ def reserva(request, pk):
     form = PersonaForm()
     form.fields['celular'].widget.attrs['maxlength'] = '8'
     distinct_today = []
-    
     hoy = datetime.datetime.today().strftime('%Y-%m-%d')
     hoy = datetime.datetime.strptime(hoy, '%Y-%m-%d').date()
-
+    locale.setlocale(locale.LC_ALL, "es")
     for d in dias:
         if d.dia > hoy:
             distinct_today.append(d)  
+
 
     data = {
         "form": form,
@@ -84,7 +85,7 @@ def reserva(request, pk):
     if request.method == 'POST':
         form = PersonaForm(data=request.POST)
         hora_pk = request.POST.get('horas')
-
+        
         if hora_pk == None or hora_pk == '':
             messages.error(request, "Debes seleccionar una hora valida")
             data['form'] = form
@@ -92,12 +93,22 @@ def reserva(request, pk):
 
         if form.is_valid():
             rut = form.cleaned_data.get('rut')
+            persona_habilitada = PersonaHabilitada.objects.filter(rut=rut).exists()
+            
+            if persona_habilitada == False:
+                messages.error(request, "Acerquese a una sucursal para poder realizar el agendamiento.")
+                return redirect(to='/')
+            
+       
             nombre = form.cleaned_data.get('nombre')
             apellido_paterno = form.cleaned_data.get('apellido_paterno')
             apellido_materno = form.cleaned_data.get('apellido_materno')
             email = form.cleaned_data.get('email')
             rut = form.cleaned_data.get('rut')
             dv = form.cleaned_data.get('dv')
+            dia_post= request.POST.get('dias')
+            dia_agendamiento = datetime.datetime.strptime(dia_post,  '%d de %B de %Y').date()
+           
             celular = form.cleaned_data.get('celular')
             existe_hora = Hora.objects.filter(pk=hora_pk).exists()
 
@@ -108,7 +119,15 @@ def reserva(request, pk):
                      'hora': hora, "email": email, 'rut': rut, 'dv': dv, 'celular': celular, 'centro':centro }
                 html_message = render_to_string('app/messages/email.html', d)
                 plain_message = strip_tags(html_message)
+
                 if existe_hora_agendada == False:
+                    persona_ag= PersonaHabilitada.objects.get(rut=rut)
+                    persona_fecha= persona_ag.fecha_vacunacion
+
+                    if dia_agendamiento < persona_fecha:
+                        messages.error(request, "Acerquese a una sucursal para poder realizar el agendamiento.")
+                        return redirect(to='/')
+
                     if hora.cupos > 0:
                         today = date.today()
                         form.centros = centro
@@ -131,7 +150,12 @@ def reserva(request, pk):
                         data['form'] = form
                 else:
                     persona = Persona.objects.get(rut=rut)
+                    persona_fecha = persona.fecha_vacunacion
 
+                    if dia_agendamiento < persona_fecha:
+                        messages.error(request, "Acerquese a una sucursal para poder realizar el agendamiento.")
+                        return redirect(to='/')
+                        
                     fecha_primer_registro = persona.fecha_primer_registro
                     if persona.vacuna_disponible <= 0:
                         messages.error(request, "Ya se encuentra vacunado")
@@ -407,6 +431,10 @@ def mantenedor_persona_admin(request):
                         if date.today() >= persona.fecha_vacunacion:
                             persona.vacuna_disponible = persona.vacuna_disponible - 1
                             persona.fecha_primer_registro = date.today()
+                            today = date.today()
+                            time_diference = persona.fecha_primer_registro - persona.fecha_nac
+                            age = int(time_diference.days / 365)
+                            persona.edad_primer_registro = age
                             persona.save()
                             messages.success(
                                 request, 'Persona registrada en el sistema')
@@ -414,8 +442,7 @@ def mantenedor_persona_admin(request):
                             messages.error(
                                 request, f'Debe esperar 28 días para la proxima vacuna')
                     elif persona.vacuna_disponible == 1:
-                        start_date = persona.fecha_primer_registro.strftime(
-                            "%Y-%m-%d")
+                        start_date = persona.fecha_primer_registro.strftime("%Y-%m-%d")
                         date_1 = datetime.datetime.strptime(start_date, "%Y-%m-%d")
                         end_date = date_1 + datetime.timedelta(days=28)
                         x = datetime.datetime(2021, 3, 23)
@@ -426,6 +453,9 @@ def mantenedor_persona_admin(request):
                             persona.fecha_primer_registro = persona.fecha_primer_registro
                             persona.fecha_seg_vacunacion = persona.fecha_seg_vacunacion
                             persona.fecha_segundo_registro = date.today()
+                            time_diference = persona.fecha_segundo_registro - persona.fecha_nac
+                            age = int(time_diference.days / 365)
+                            persona.edad_segundo_registro = age
                             persona.save()
                             messages.success(
                                 request, 'Persona registrada en el sistema')
@@ -455,6 +485,10 @@ def mantenedor_persona(request):
                     if date.today() >= persona.fecha_vacunacion:
                         persona.vacuna_disponible = persona.vacuna_disponible - 1
                         persona.fecha_primer_registro = date.today()
+                        persona.fecha_segundo_registro = date.today()
+                        time_diference = persona.fecha_segundo_registro - persona.fecha_nac
+                        age = int(time_diference.days / 365)
+                        persona.edad_primer_registro = age
                         persona.save()
                         messages.success(
                             request, 'Persona registrada en el sistema')
@@ -474,6 +508,9 @@ def mantenedor_persona(request):
                         persona.fecha_primer_registro = persona.fecha_primer_registro
                         persona.fecha_seg_vacunacion = persona.fecha_seg_vacunacion
                         persona.fecha_segundo_registro = date.today()
+                        time_diference = persona.fecha_segundo_registro - persona.fecha_nac
+                        age = int(time_diference.days / 365)
+                        persona.edad_segundo_registro = age
                         persona.save()
                         messages.success(
                             request, 'Persona registrada en el sistema')

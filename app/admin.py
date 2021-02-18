@@ -47,4 +47,5 @@ class PersonaImport(ImportExportModelAdmin, PersonaAdmin):
 
 admin.site.register(Centro) 
 admin.site.register(Profile)
+admin.site.register(PersonaHabilitada)
 

@@ -46,14 +46,17 @@
 										{% endfor %}
 									</select>
 								</div>
-								<div class="form-group col-sm-12 col-md-4">
+								<div class="form-group col-sm-12 col-md-3">
 								 {{form.nombre|as_crispy_field}}
 								</div>
-								<div class="form-group col-sm-12 col-md-4">
+								<div class="form-group col-sm-12 col-md-3">
 									{{form.apellido_paterno|as_crispy_field}}
 								</div>
-								<div class="form-group  col-sm-12 col-md-4">
+								<div class="form-group  col-sm-12 col-md-3">
 									{{form.apellido_materno|as_crispy_field}}
+								</div>
+								<div class="form-group  col-sm-12 col-md-3">
+									{{form.genero|as_crispy_field}}
 								</div>
 								<div class="form-group col-sm-12 col-md-6">
 									{{form.email|as_crispy_field}} 
