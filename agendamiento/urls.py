@@ -4,8 +4,8 @@ from  app.views import  index, reserva
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-  #  path('user/', include('app.urls')),
-  #  path('', index, name='index'),
-  #  path('reserva/<pk>/', reserva, name='reserva'),
+    path('user/', include('app.urls')),
+    path('', index, name='index'),
+    path('reserva/<pk>/', reserva, name='reserva'),
 
 ]

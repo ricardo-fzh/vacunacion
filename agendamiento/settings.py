@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'import_export',
     'crispy_forms',
     'app',
+    'rest_framework',
 ]
 
 X_FRAME_OPTIONS='SAMEORIGIN'
